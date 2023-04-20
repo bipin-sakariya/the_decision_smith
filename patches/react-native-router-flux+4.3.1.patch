@@ -1,0 +1,99 @@
+diff --git a/node_modules/react-native-router-flux/src/NavBar.js b/node_modules/react-native-router-flux/src/NavBar.js
+index bb154e0..b4827b5 100644
+--- a/node_modules/react-native-router-flux/src/NavBar.js
++++ b/node_modules/react-native-router-flux/src/NavBar.js
+@@ -28,7 +28,7 @@ export function BackButton(state) {
+   // returning react-navigation's back button well styled for ios and android if rnrf4-supported customization
+   // is not required
+   if (!state.backButtonImage) {
+-    return <HeaderBackButton onPress={onPress} title={state.backTitle} titleStyle={textButtonStyle} tintColor={tintColor} truncatedTitle={state.truncatedTitle} />;
++    return <HeaderBackButton onPress={onPress} label={state.backTitle} titleStyle={textButtonStyle} tintColor={tintColor} truncatedTitle={state.truncatedTitle} />;
+   }
+ 
+   const text = state.backTitle ? <Text style={textButtonStyle}>{state.backTitle}</Text> : null;
+diff --git a/node_modules/react-native-router-flux/src/Store.js b/node_modules/react-native-router-flux/src/Store.js
+index 82eed18..9caaf52 100644
+--- a/node_modules/react-native-router-flux/src/Store.js
++++ b/node_modules/react-native-router-flux/src/Store.js
+@@ -112,6 +112,7 @@ function getProperties(component = {}) {
+ function createTabBarOptions({
+   tabBarStyle, activeTintColor, inactiveTintColor, activeBackgroundColor, inactiveBackgroundColor, showLabel, labelStyle, tabStyle, ...props
+ }) {
++
+   return {
+     ...props,
+     style: tabBarStyle,
+@@ -124,7 +125,7 @@ function createTabBarOptions({
+     tabStyle,
+   };
+ }
+-function createNavigationOptions(params) {
++function createNavigationOptions(params, transitionConfig) {
+   const {
+     type,
+     cardStyle,
+@@ -188,7 +189,7 @@ function createNavigationOptions(params) {
+       ...screenProps,
+     };
+     const res = {
+-      animationEnabled: !(type === ActionConst.REPLACE || type === 'replace'  || type === ActionConst.RESET || type === 'reset'),
++      animationEnabled: !(type === ActionConst.REPLACE || type === 'replace' || type === ActionConst.RESET || type === 'reset'),
+       ...props,
+       cardStyle: navigationParams.cardStyle || cardStyle,
+       headerBackImage: navigationParams.backButtonImage || backButtonImage,
+@@ -202,6 +203,7 @@ function createNavigationOptions(params) {
+       headerTitle: getValue(navigationParams.renderTitle || renderTitle || params.renderTitle, state),
+       headerTitleStyle: headerTitleStyle || titleStyle,
+       title: getValue(navigationParams.title || title || getTitle, state),
++      transitionConfig: transitionConfig,
+     };
+ 
+     const NavBarFromParams = navigationParams.renderNavigationBar || navigationParams.navBar;
+@@ -326,10 +328,10 @@ function createNavigationOptions(params) {
+ 
+     if (navigationParams.hideNavBar != null) {
+       if (navigationParams.hideNavBar) {
+-        res.header = null;
++        res.headerShown = false;
+       }
+     } else if (hideNavBar) {
+-      res.header = null;
++      res.headerShown = false;
+     }
+ 
+     if (navTransparent) {
+@@ -473,8 +475,8 @@ function uniteParams(routeName, params) {
+   return res;
+ }
+ 
+-const defaultSuccess = () => {};
+-const defaultFailure = () => {};
++const defaultSuccess = () => { };
++const defaultFailure = () => { };
+ 
+ export default class NavigationStore {
+   getStateForAction = null;
+@@ -764,8 +766,7 @@ export default class NavigationStore {
+           'actions',
+           'props',
+           'type',
+-          `return function ${
+-            key.replace(/\W/g, '_') // eslint-disable-line no-new-func
++          `return function ${key.replace(/\W/g, '_') // eslint-disable-line no-new-func
+           }(params){ actions.execute(type, '${key}', props, params)}`,
+         )(this, { error: '', ...commonProps, ...props }, type);
+       }
+@@ -864,9 +865,10 @@ export default class NavigationStore {
+       mode,
+       initialRouteParams,
+       initialRouteName,
+-      ...commonProps,
+-      transitionConfig,
+-      navigationOptions: createNavigationOptions(commonProps),
++      // ...commonProps,
++      // transitionConfig,
++      // navigationOptions: createNavigationOptions(commonProps),
++      navigationOptions: createNavigationOptions(commonProps, transitionConfig),
+     });
+   };
+ 

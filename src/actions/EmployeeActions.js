@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from 'firebase/compat';
 import {Actions} from 'react-native-router-flux';
 
 import {EMPLOYEE_UPDATE, EMPLOYEE_CREATE, EMPLOYEE_FETCH, EMPLOYEES_FETCH_SUCCESS, EMPLOYEE_SAVE_SUCCESS, EMPLOYEE_STATE_RESET} from './types';

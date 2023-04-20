@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.12",
@@ -15,8 +16,9 @@
     "@react-native-community/netinfo": "^9.3.7",
     "deprecated-react-native-listview": "^0.0.8",
     "deprecated-react-native-prop-types": "^4.0.0",
-    "firebase": "8.10.1",
+    "firebase": "^9.19.1",
     "moment": "^2.29.4",
+    "patch-package": "^6.5.1",
     "react": "18.2.0",
     "react-native": "0.71.4",
     "react-native-communications": "^2.2.1",
@@ -24,7 +26,7 @@
     "react-native-gesture-handler": "^1.10.3",
     "react-native-modal": "^13.0.1",
     "react-native-reanimated": "^1.13.4",
-    "react-native-router-flux": "^4.0.0-beta.31",
+    "react-native-router-flux": "^4.3.1",
     "react-native-safe-area-context": "^4.5.0",
     "react-native-screens": "^3.20.0",
     "react-native-vector-icons": "^9.2.0",

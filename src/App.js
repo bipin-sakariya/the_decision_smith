@@ -5,7 +5,8 @@ import { applyMiddleware, createStore } from 'redux';
 import ReduxThunk from 'redux-thunk'; // this is middleware
 import reducers from './reducers';
 import RouterComponent from './Router';
-import firebase from 'firebase';
+import firebase from 'firebase/compat';
+import thunk from 'redux-thunk';
 
 class App extends Component {
   componentWillMount() {
@@ -35,11 +36,11 @@ class App extends Component {
   }
 
   render() {
-    const store = createStore(reducers, {}, applyMiddleware(ReduxThunk), window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+    const store = createStore(reducers,applyMiddleware(thunk));
     return (
       <Provider store={store}>
-        <RouterComponent/>
-      </Provider> 
+        <RouterComponent />
+      </Provider>
     )
   }
 }

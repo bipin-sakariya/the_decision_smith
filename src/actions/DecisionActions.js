@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from 'firebase/compat';
 import {Actions} from 'react-native-router-flux';
 import Reactotron from 'reactotron-react-native';
 

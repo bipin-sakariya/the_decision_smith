@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from 'firebase/compat';
 import { Alert } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import Reactotron from 'reactotron-react-native';
@@ -20,6 +20,7 @@ import {
   START_AUTH_LOADING,
   STOP_AUTH_LOADING
 } from './types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export const firstNameChanged = (text) => {
@@ -106,19 +107,28 @@ export const loginUser = ({ email, password }, staySignedIn) => {
 
     function signIn() {
       firebase.auth().signInWithEmailAndPassword(email.toLowerCase(), password)
-        .then(user => loginUserSuccess(dispatch, user))
+        .then(async (user) => {
+          loginUserSuccess(dispatch, user)
+          if(staySignedIn) {
+            let user = {
+              email: email.toLowerCase(),
+              password: password
+            }
+            await AsyncStorage.setItem('User', JSON.stringify(user))
+          }
+        })
         .catch((error) => { console.log({ error }); loginUserFail(dispatch, error) });
     }
 
-    const persistenceType = staySignedIn ? 'LOCAL' : 'NONE';
+    // const persistenceType = staySignedIn ? 'LOCAL' : 'NONE';
 
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence[persistenceType])
-      .then(function () {
+    // firebase.auth().setPersistence(firebase.auth.Auth.Persistence[persistenceType])
+    //   .then(function () {
         signIn();
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+      // })
+      // .catch(function (error) {
+      //   console.log(error);
+      // });
   };
 };
 

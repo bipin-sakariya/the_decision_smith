@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from 'firebase/compat';
 import { Alert, Platform } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 // import * as RNIap from 'react-native-iap';

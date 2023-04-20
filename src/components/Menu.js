@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {ScrollView, StyleSheet, Text, View, Image, Platform} from 'react-native';
 import { connect } from 'react-redux';
-import firebase from 'firebase';
+import firebase from 'firebase/compat';
 import {Button, FormInput, FormLabel, FormValidationMessage} from 'react-native-elements';
 import socialColors from '../config/socialColors.js';
 // import * as RNIap from 'react-native-iap';
@@ -9,6 +9,7 @@ import {Actions} from 'react-native-router-flux';
 import { emailChanged } from '../actions';
 import {Spinner} from './common';
 import Network from './Network';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const itemSkus = Platform.select({
   ios: [
@@ -33,6 +34,7 @@ class Menu extends Component {
     onSignOutButtonPress() {
       firebase.auth().signOut()
       .then(function() {
+        AsyncStorage.removeItem('User')
         Actions.popTo('InitialViewRoute');
       })
       .catch(function(error) {

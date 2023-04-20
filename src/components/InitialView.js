@@ -1,22 +1,55 @@
 import React, { Component } from 'react';
-import { ScrollView, Text, View, Image, StyleSheet } from 'react-native';
+import { ScrollView, Text, View, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import { Button, FormInput, FormLabel, FormValidationMessage } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
-import firebase from "firebase";
+import firebase from "firebase/compat";
 import socialColors from '../config/socialColors.js';
 import colors from '../config/colors.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class InitialView extends Component {
-  componentWillMount() {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      loading: true
+    }
+  }
+
+  UNSAFE_componentWillMount() {
+    // var that = this;
     //Check if user is logged in
-    firebase.auth().onAuthStateChanged(function (user) {
-      if (user) {
-        console.log('User is signed in', user);
-        Actions.main();
-      } else {
-        console.log('No user is signed in');
-      }
-    });
+    // setTimeout(() => {
+    // firebase.auth().onAuthStateChanged(function (user) {
+    //   console.log({ user });
+    //   if (user) {
+    //     that.setState({ loading: false })
+    //     console.log('User is signed in', user);
+    //     Actions.main();
+    //   } else {
+    //     that.setState({ loading: false })
+    //     console.log('No user is signed in');
+    //   }
+    // });
+    // }, 5000)
+    this.getUser()
+  }
+
+  async getUser() {
+    const getUser = await AsyncStorage.getItem('User')
+    const user = JSON.parse(getUser)
+    console.log({ user })
+    if (user) {
+      firebase.auth().signInWithEmailAndPassword(user.email, user.password)
+        .then(async (user) => {
+          if (user) {
+            Actions.main();
+          }
+        })
+        .catch((error) => { console.log({ error }); });
+    } else {
+      this.setState({ loading: false })
+    }
   }
 
   onSignInButtonPress() {
@@ -59,7 +92,10 @@ class InitialView extends Component {
             <Text style={styles.introductionText}>The Decision Smith - an interactive tool to help you evaluate difficult decisions.</Text>
           </View>
           <View>
-            {this.renderButtons()}
+            {this.state.loading ?
+              <ActivityIndicator /> :
+              this.renderButtons()
+            }
           </View>
         </View>
 
@@ -139,3 +175,156 @@ const styles = StyleSheet.create({
 })
 
 export default InitialView;
+
+// import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from 'react-native'
+// import React, { useEffect, useState } from 'react'
+// import socialColors from '../config/socialColors'
+// import colors from '../config/colors'
+// import { Button, FormInput, FormLabel, FormValidationMessage } from 'react-native-elements';
+// import { Actions } from 'react-native-router-flux';
+// import firebase from "firebase/compat";
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// const InitialView = (props) => {
+//   const [loading, setLoading] = useState(true)
+//   useEffect(() => {
+//     getUser()
+//   }, [])
+
+//   const getUser = async () => {
+//     const getUser = await AsyncStorage.getItem('User')
+//     const user = JSON.parse(getUser)
+//     if (user) {
+//       firebase.auth().signInWithEmailAndPassword(user.email, user.password)
+//         .then(async (user) => {
+//           if (user) {
+//             Actions.main();
+//           }
+//         })
+//         .catch((error) => { console.log({ error }); });
+//     } else {
+//       setLoading(false)
+//     }
+//   }
+
+//   const onSignInButtonPress = () => {
+//     Actions.LoginRoute();
+//   }
+
+//   const onSignUpButtonPress = () => {
+//     Actions.SignUpFormRoute();
+//   }
+
+//   const renderButtons = () => {
+//     if (props.loading) {
+//       return (<Spinner size="large" />)
+//     } else {
+//       return (
+//         <View>
+//           <Button title='SIGN IN' onPress={onSignInButtonPress} large backgroundColor={socialColors.smithGreen} />
+//           <Text style={styles.signingText}>Signing in will enable you to save and access your decisions in the future</Text>
+//           <Text style={styles.questionText}>Don't have an account? </Text>
+//           <Button title='SIGN UP' onPress={onSignUpButtonPress} large backgroundColor={socialColors.smithPurple} />
+//         </View>
+//       )
+//     }
+//   }
+
+//   return (
+//     <ScrollView style={{
+//       backgroundColor: '#FFFFFF'
+//     }} keyboardShouldPersistTaps="always">
+//       <View style={styles.contentContainer}>
+//         <View>
+//           <Image source={require('../assets/logo.jpg')} style={{
+//             flex: 1,
+//             height: 150,
+//             width: 350,
+//             justifyContent: 'center'
+//           }} />
+//           <Text style={styles.tagLine}>HELPING YOU MAKE DIFFICULT DECISIONS WITH CONFIDENCE</Text>
+//           <Text style={styles.introductionText}>The Decision Smith - an interactive tool to help you evaluate difficult decisions.</Text>
+//         </View>
+//         <View>
+//           {loading ?
+//             <ActivityIndicator /> :
+//             renderButtons()
+//           }
+//         </View>
+//       </View>
+
+//       <View style={styles.footer}>
+//         <Text style={styles.footerText}
+//           onPress={() => Actions.LegalInit()}
+//         >
+//           By signing up to The Decision Smith, you agree to the privacy policy and terms of service.
+//         </Text>
+
+//       </View>
+//     </ScrollView>
+//   )
+// }
+
+// export default InitialView
+
+// const styles = StyleSheet.create({
+//   contentContainer: {
+//     flex: 1 // pushes the footer to the end of the screen
+//   },
+//   footer: {
+//     height: 100
+//   },
+//   tagLine: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     textAlign: 'center',
+//     marginBottom: 5,
+//     fontSize: 20,
+//     color: socialColors.smithBlue,
+//     fontWeight: 'bold'
+
+//   },
+//   introductionText: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     textAlign: 'center',
+//     marginTop: 5,
+//     marginBottom: 20,
+//     marginRight: 5,
+//     marginLeft: 5,
+//     fontSize: 16,
+//     color: socialColors.smithPurple
+//   },
+//   signingText: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     textAlign: 'center',
+//     marginTop: 10,
+//     marginBottom: 10,
+//     marginRight: 5,
+//     marginLeft: 5,
+//     fontSize: 12,
+//     color: colors.smithGrey
+//   },
+//   questionText: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     textAlign: 'center',
+//     marginTop: 8,
+//     marginBottom: 10,
+//     marginRight: 5,
+//     marginLeft: 5,
+//     fontSize: 16,
+//     color: colors.smithGrey
+//   },
+//   footerText: {
+//     textAlign: 'center',
+//     marginTop: 10,
+//     marginBottom: 'auto',
+//     marginRight: 5,
+//     marginLeft: 5,
+//     fontSize: 12,
+//     color: colors.smithGrey,
+//     textDecorationLine: 'underline'
+//   }
+// })
